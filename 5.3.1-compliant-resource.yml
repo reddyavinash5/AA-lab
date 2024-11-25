@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: valid-pod
+  namespace: default
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+  volumes:
+    - name: csi-volume
+      csi:
+        driver: "secrets-store.csi.k8s.io"  # Mandatory
+        nodePublishSecretRef:               # Optional
+          name: my-secret

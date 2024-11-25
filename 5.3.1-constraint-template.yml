@@ -1,0 +1,28 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: validatecsisecrets
+spec:
+  crd:
+    spec:
+      names:
+        kind: ValidateCSISecrets
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package kubernetes.policies.validate_csi_secrets
+
+        violation[{"msg": msg}] {
+            input.review.kind.kind == "Pod"  # Ensure the resource is a Pod
+            some i
+            volume := input.review.object.spec.volumes[i]
+
+            # Condition 1: The volume contains a secret
+            volume.secret.secretName
+
+            # Condition 2: The volume must use a CSI driver
+            not volume.csi.driver
+
+            # Violation message
+            msg := sprintf("Volume '%s' contains a secret but does not specify a valid CSI driver", [volume.name])
+        }

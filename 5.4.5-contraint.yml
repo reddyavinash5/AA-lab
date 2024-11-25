@@ -1,0 +1,40 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: requirehttpsingress
+spec:
+  crd:
+    spec:
+      names:
+        kind: RequireHTTPSIngress
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                parameters:
+                  type: object
+  targets:
+  - target: admission.k8s.gatekeeper.sh
+    rego: |
+      package require_https_ingress
+
+      violation[{"msg": message}] {
+          input.review.kind.kind == "Ingress"                  # Ensure the resource is an Ingress
+          input.review.kind.group == "networking.k8s.io"       # Ensure the API group is correct
+          not has_tls                                          # Check if TLS is missing
+          message := "Ingress resource must include a TLS configuration to enforce HTTPS."
+      }
+
+      # Helper rule: checks if 'tls' exists and has entries
+      has_tls {
+          some i
+          tls := input.review.object.spec.tls                 # Access the TLS field in the Ingress spec
+          count(tls) > 0                                           # Ensure at least one valid TLS entry exists
+      }
+
+
+   
+

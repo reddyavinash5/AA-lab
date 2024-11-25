@@ -1,0 +1,142 @@
+{
+  "properties": {
+    "policyType": "Custom",
+    "mode": "Microsoft.Kubernetes.Data",
+    "displayName": "5.4.5 Encrypt traffic to HTTPS load balancers with TLS certificates",
+    "description": "5.4.5 Encrypt traffic to HTTPS load balancers with TLS certificates",
+    "policyRule": {
+      "if": {
+        "field": "type",
+        "in": [
+          "Microsoft.ContainerService/managedClusters"
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "templateInfo": {
+            "sourceType": "Base64Encoded",
+            "content": "YXBpVmVyc2lvbjogdGVtcGxhdGVzLmdhdGVrZWVwZXIuc2gvdjEKa2luZDogQ29uc3RyYWludFRlbXBsYXRlCm1ldGFkYXRhOgogIG5hbWU6IHJlcXVpcmVodHRwc2luZ3Jlc3MKc3BlYzoKICBjcmQ6CiAgICBzcGVjOgogICAgICBuYW1lczoKICAgICAgICBraW5kOiBSZXF1aXJlSFRUUFNJbmdyZXNzCiAgICAgIHZhbGlkYXRpb246CiAgICAgICAgb3BlbkFQSVYzU2NoZW1hOgogICAgICAgICAgdHlwZTogb2JqZWN0CiAgICAgICAgICBwcm9wZXJ0aWVzOgogICAgICAgICAgICBzcGVjOgogICAgICAgICAgICAgIHR5cGU6IG9iamVjdAogICAgICAgICAgICAgIHByb3BlcnRpZXM6CiAgICAgICAgICAgICAgICBwYXJhbWV0ZXJzOgogICAgICAgICAgICAgICAgICB0eXBlOiBvYmplY3QKICB0YXJnZXRzOgogIC0gdGFyZ2V0OiBhZG1pc3Npb24uazhzLmdhdGVrZWVwZXIuc2gKICAgIHJlZ286IHwKICAgICAgcGFja2FnZSByZXF1aXJlX2h0dHBzX2luZ3Jlc3MKCiAgICAgIHZpb2xhdGlvblt7Im1zZyI6IG1lc3NhZ2V9XSB7CiAgICAgICAgICBpbnB1dC5yZXZpZXcua2luZC5raW5kID09ICJJbmdyZXNzIiAgICAgICAgICAgICAgICAgICMgRW5zdXJlIHRoZSByZXNvdXJjZSBpcyBhbiBJbmdyZXNzCiAgICAgICAgICBpbnB1dC5yZXZpZXcua2luZC5ncm91cCA9PSAibmV0d29ya2luZy5rOHMuaW8iICAgICAgICMgRW5zdXJlIHRoZSBBUEkgZ3JvdXAgaXMgY29ycmVjdAogICAgICAgICAgbm90IGhhc190bHMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIENoZWNrIGlmIFRMUyBpcyBtaXNzaW5nCiAgICAgICAgICBtZXNzYWdlIDo9ICJJbmdyZXNzIHJlc291cmNlIG11c3QgaW5jbHVkZSBhIFRMUyBjb25maWd1cmF0aW9uIHRvIGVuZm9yY2UgSFRUUFMuIgogICAgICB9CgogICAgICAjIEhlbHBlciBydWxlOiBjaGVja3MgaWYgJ3RscycgZXhpc3RzIGFuZCBoYXMgZW50cmllcwogICAgICBoYXNfdGxzIHsKICAgICAgICAgIHNvbWUgaQogICAgICAgICAgdGxzIDo9IGlucHV0LnJldmlldy5vYmplY3Quc3BlYy50bHMgICAgICAgICAgICAgICAgICMgQWNjZXNzIHRoZSBUTFMgZmllbGQgaW4gdGhlIEluZ3Jlc3Mgc3BlYwogICAgICAgICAgY291bnQodGxzKSA+IDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBFbnN1cmUgYXQgbGVhc3Qgb25lIHZhbGlkIFRMUyBlbnRyeSBleGlzdHMKICAgICAgfQoKCiAgIAoK"
+          },
+          "apiGroups": [
+            "networking.k8s.io"
+          ],
+          "kinds": [
+            "Ingress"
+          ],
+          "namespaces": "[parameters('namespaces')]",
+          "excludedNamespaces": "[parameters('excludedNamespaces')]",
+          "labelSelector": "[parameters('labelSelector')]",
+          "values": {
+            "spec": "[parameters('spec')]"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "'audit' allows a non-compliant resource to be created or updated, but flags it as non-compliant. 'deny' blocks the non-compliant resource creation or update. 'disabled' turns off the policy."
+        },
+        "allowedValues": [
+          "audit",
+          "deny",
+          "disabled"
+        ],
+        "defaultValue": "audit"
+      },
+      "excludedNamespaces": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Namespace exclusions",
+          "description": "List of Kubernetes namespaces to exclude from policy evaluation."
+        },
+        "defaultValue": [
+          "kube-system",
+          "gatekeeper-system",
+          "azure-arc"
+        ]
+      },
+      "namespaces": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Namespace inclusions",
+          "description": "List of Kubernetes namespaces to only include in policy evaluation. An empty list means the policy is applied to all resources in all namespaces."
+        },
+        "defaultValue": []
+      },
+      "labelSelector": {
+        "type": "Object",
+        "metadata": {
+          "displayName": "Kubernetes label selector",
+          "description": "Label query to select Kubernetes resources for policy evaluation. An empty label selector matches all Kubernetes resources."
+        },
+        "defaultValue": {},
+        "schema": {
+          "description": "A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all resources.",
+          "type": "object",
+          "properties": {
+            "matchLabels": {
+              "description": "matchLabels is a map of {key,value} pairs.",
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "minProperties": 1
+            },
+            "matchExpressions": {
+              "description": "matchExpressions is a list of values, a key, and an operator.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "description": "key is the label key that the selector applies to.",
+                    "type": "string"
+                  },
+                  "operator": {
+                    "description": "operator represents a key's relationship to a set of values.",
+                    "type": "string",
+                    "enum": [
+                      "In",
+                      "NotIn",
+                      "Exists",
+                      "DoesNotExist"
+                    ]
+                  },
+                  "values": {
+                    "description": "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "key",
+                  "operator"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "spec": {
+        "type": "Object",
+        "metadata": {
+          "displayName": "/* EDIT HERE */",
+          "description": "/* EDIT HERE */"
+        },
+        "schema": {
+          "type": "object",
+          "description": "/* [OPTIONAL] SPECIFY JSON SCHEMA TO USE TO VALIDATE OBJECT PARAMETER INPUT */"
+        }
+      }
+    }
+  }
+}
